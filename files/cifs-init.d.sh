@@ -80,7 +80,8 @@ mount_natshare() {
 		AGM=""
 	fi
 
-	append _mount_path "$MOUNTAREA/${server}-$name"
+	#append _mount_path "$MOUNTAREA/${server}-$name"
+	append _mount_path "$MOUNTAREA/$name"
 	append _agm "-o ${USERS}${GUEST}domain=$WORKGROUPD,iocharset=$IOCHARSET$AGM"
 	
 	sleep 1
@@ -96,11 +97,15 @@ umount_natshare() {
 	config_get server $1 server
 	config_get name $1 name
 
-	append _mount_path "$MOUNTAREA/${server}-$name"
+	#append _mount_path "$MOUNTAREA/${server}-$name"
+	append _mount_path "$MOUNTAREA/$name"
 
 	sleep 1
-	umount -d -l $_mount_path
-	rm -r -f $_mount_path 
+	umount -l $_mount_path
+	state=`mount | grep $_mount_path`
+	if [ -z "$state" ]; then
+		rm -r -f $_mount_path
+	fi
 }
 
 change_natshare() {
@@ -126,7 +131,6 @@ start() {
 		fi
 
 		config_foreach mount_natshare natshare
-		/etc/init.d/samba restart
 
 		echo "Cifs Mount succeed."
 		}
@@ -151,8 +155,6 @@ restart() {
 	
 	config_load cifs
 	config_foreach cifs_header cifs
-
-	/etc/init.d/samba stop
 
 	config_foreach umount_natshare natshare
 

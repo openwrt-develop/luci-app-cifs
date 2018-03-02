@@ -17,7 +17,7 @@ define Package/luci-app-cifs
 	SUBMENU:=3. Applications
 	TITLE:=Mounting Nat Drives
 	PKGARCH:=all
-	DEPENDS:=+kmod-fs-cifs +kmod-nls-utf8
+	DEPENDS:=+kmod-fs-cifs +kmod-nls-base +kmod-nls-utf8 +kmod-crypto-hmac +kmod-crypto-md5 +kmod-crypto-misc +cifsmount
 endef
 
 define Package/luci-app-cifs/description
@@ -42,7 +42,7 @@ endef
 
 define Package/luci-app-cifs/postinst
 #!/bin/sh
-	/etc/init.d/cifs.sh enable
+	/etc/init.d/cifs enable
 exit 0
 endef
 
@@ -54,7 +54,7 @@ define Package/luci-app-cifs/install
 	$(INSTALL_DATA) ./files/cifs-config $(1)/etc/config/cifs
 	
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/cifs-init.d.sh $(1)/etc/init.d/cifs.sh
+	$(INSTALL_BIN) ./files/cifs-init.d.sh $(1)/etc/init.d/cifs
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller
 	$(INSTALL_DATA) ./files/cifs-controller.lua $(1)/usr/lib/lua/luci/controller/cifs.lua
